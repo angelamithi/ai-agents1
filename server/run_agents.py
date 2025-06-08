@@ -1,7 +1,7 @@
 import os
 import asyncio
 from dotenv import load_dotenv
-from agents import Agent, Runner
+from agents import Agent, Runner,function_tool,WebSearchTool
 from pydantic import BaseModel
 
 load_dotenv()
@@ -39,6 +39,27 @@ recipe_agent=Agent(
     model="gpt-4o-mini",
     output_type=Recipe
 )
+@function_tool
+def get_weather(city:str)-> str:
+    print(f"Get weather for {city}")
+    return f" The weather for {city} is sunny"
+@function_tool
+def get_temperature(city:str)->str:
+    print(f"Get temperature for {city}") 
+    return f"The temperature for {city}is 70 degrees"
+
+weather_agent=Agent(
+     name="Weather Agent",
+     instructions="You are the local weather agent. You are given a city and you need to tell the weather and temperature. For any unrelated queries, say I cant help with that.",
+     model="gpt-4o-mini",
+     tools=[get_weather,get_temperature]
+ )
+news_agent=Agent(
+    name="News Agent",
+    instructions="You are a news reporter. Your job is to find recent news articles on the internet about US politics.",
+    model="gpt-4o-mini",
+    tools=[WebSearchTool()]
+)
 
 async def main():
     # result = await Runner.run(agent, "Hello! How are you?")
@@ -50,8 +71,12 @@ async def main():
     # translated_joke_result=await Runner.run(language_agent,f"Traslate this joke to Swahili:{joke_result.final_output}")
     # print(f"Original joke:\n{joke_result.final_output}\n")
     # print(f"Translated joke:\n{translated_joke_result.final_output}")
-    response=await Runner.run(recipe_agent,"Italian Sausage with Spaghetti")
-    print(response.final_output)
+    # response=await Runner.run(recipe_agent,"Italian Sausage with Spaghetti")
+    # print(response.final_output)
+    # weather_result=await Runner.run(weather_agent,"Nairobi")
+    # print(weather_result.final_output)
+    news_result=await Runner.run(news_agent,"find news")
+    print(news_result.final_output)
 
 if __name__ == "__main__":
     asyncio.run(main())
