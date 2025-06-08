@@ -60,7 +60,13 @@ news_agent=Agent(
     model="gpt-4o-mini",
     tools=[WebSearchTool()]
 )
-
+news_agent2=Agent(
+    name="News Agent2",
+    instructions="You are a news agent that can search the web for the latest newson a given topic."+
+    "Compile the information you find into a concise 1 paragraph summary.No markdown,just plain text",
+    model="gpt-4o-mini",
+    tools=[WebSearchTool()]
+)
 async def main():
     # result = await Runner.run(agent, "Hello! How are you?")
     # print(result.final_output)
@@ -75,8 +81,14 @@ async def main():
     # print(response.final_output)
     # weather_result=await Runner.run(weather_agent,"Nairobi")
     # print(weather_result.final_output)
-    news_result=await Runner.run(news_agent,"find news")
-    print(news_result.final_output)
+    # news_result=await Runner.run(news_agent,"find news")
+    # print(news_result.final_output)
+    while True:
+        query=input("Enter your news query(or 'quit'to exit)")
+        if query.lower=="quit":
+            break
+        result=await Runner.run(news_agent2,query)
+        print(result.final_output)
 
 if __name__ == "__main__":
     asyncio.run(main())
