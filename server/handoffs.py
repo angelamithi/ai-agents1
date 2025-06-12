@@ -1,7 +1,7 @@
 import os
 import asyncio
 from dotenv import load_dotenv
-from agents import Agent, Runner,function_tool,WebSearchTool,handoff,RunContextWrapper
+from agents import Agent, Runner,function_tool,WebSearchTool,handoff,RunContextWrapper,trace
 from pydantic import BaseModel
 from agents.extensions.handoff_prompt import RECOMMENDED_PROMPT_PREFIX
 
@@ -114,8 +114,9 @@ async def main():
     # print(result.final_output)
     # result = await Runner.run(customer_service_agent, "Hello how much are tickets?")
     # print(result.final_output)
-    result = await Runner.run(customer_service_agent, "I want a refund,but your system wont let me process it.The website is just blank for me to process a refund?")
-    print(result.final_output)
+    with trace("Customer service hotline"):
+        result = await Runner.run(customer_service_agent, "I want a refund,but your system wont let me process it.The website is just blank for me to process a refund?")
+        print(result.final_output)
 
 
 if __name__ == "__main__":
